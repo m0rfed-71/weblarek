@@ -4,6 +4,7 @@ import { Catalog } from './components/base/models/catalog';
 import { Buyer } from './components/base/models/buyer';
 import { Basket } from './components/base/models/basket';
 import { IProduct } from './types';
+import { Communication } from './components/base/communication';
 
 /** Проверка методов модели каталога */
 const productsModel= new Catalog();
@@ -47,3 +48,10 @@ newBuyerModel.setData({
 });
 console.log('Данные покупателя после ввода: ',newBuyerModel.getData());
 console.log('Проверка заполнения всех полей: ',newBuyerModel.validate());
+
+/** Проверка методов слоя общения с сервером */
+const communication = new Communication();
+communication.get().then((data) => {
+    productsModel.setItems(data.items);
+    console.log('Каталог, сохранённый с сервера: ', productsModel.getItems());
+});

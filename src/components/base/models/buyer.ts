@@ -36,7 +36,7 @@ export class Buyer {
         const errors: Partial<Record<keyof IBuyer, string>> = {};
 
         if (!this.payment) {
-            errors.payment = 'Выберите способ оплаты';
+            errors.payment = 'Выберите выбрать способ оплаты';
         }
 
         if (!this.email) {
