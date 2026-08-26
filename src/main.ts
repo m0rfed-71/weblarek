@@ -53,5 +53,5 @@ console.log('Проверка заполнения всех полей: ',newBuy
 const communication = new Communication();
 communication.get().then((data) => {
     productsModel.setItems(data.items);
-    console.log('Каталог, сохранённый с сервера: ', productsModel.getItems());
+    console.log('Каталог,  с сервера: ', productsModel.getItems());
 });
