@@ -1,6 +1,6 @@
-import { Api } from './Api';
-import { IOrder, IOrderResult, IProductsResponse } from '../../types';
-import { API_URL } from '../../utils/constants';
+import { Api } from './base/Api';
+import { IOrder, IOrderResult, IProductsResponse } from '../types';
+import { API_URL } from '../utils/constants';
 
 /**
  * Слой общения с сервером: запросы к API магазина.

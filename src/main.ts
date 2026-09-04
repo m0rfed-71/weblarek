@@ -4,7 +4,7 @@ import { Catalog } from './components/models/catalog';
 import { Buyer } from './components/models/buyer';
 import { Basket } from './components/models/basket';
 import { IProduct } from './types';
-import { Communication } from './components/base/communication';
+import { Communication } from './components/communication';
 
 /** Проверка методов модели каталога */
 const productsModel= new Catalog();
