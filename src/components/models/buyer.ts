@@ -1,4 +1,4 @@
-import { IBuyer, TPayment } from '../../../types';
+import { IBuyer, TPayment } from '../../types';
 
 /**
  * Модель покупателя: способ оплаты, адрес, телефон и email.

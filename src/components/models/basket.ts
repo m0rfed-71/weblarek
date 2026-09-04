@@ -1,4 +1,4 @@
-import { IProduct } from '../../../types';
+import { IProduct } from '../../types';
 
 /**
  * Модель корзины: товары, выбранные покупателем для покупки.

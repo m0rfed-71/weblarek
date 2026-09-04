@@ -1,8 +1,8 @@
 import './scss/styles.scss';
-import { apiProducts } from './utils/data'; 
-import { Catalog } from './components/base/models/catalog';
-import { Buyer } from './components/base/models/buyer';
-import { Basket } from './components/base/models/basket';
+import { apiProducts } from './utils/data';
+import { Catalog } from './components/models/catalog';
+import { Buyer } from './components/models/buyer';
+import { Basket } from './components/models/basket';
 import { IProduct } from './types';
 import { Communication } from './components/base/communication';
 
