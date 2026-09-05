@@ -1,15 +1,13 @@
-import { Api } from './base/Api';
-import { IOrder, IOrderResult, IProductsResponse } from '../types';
-import { API_URL } from '../utils/constants';
+import { IApi, IOrder, IOrderResult, IProductsResponse } from '../types';
 
 /**
  * Слой общения с сервером: запросы к API магазина.
  */
 export class Communication {
-    protected api: Api;
+    protected api: IApi;
 
-    constructor() {
-        this.api = new Api(API_URL);
+    constructor(api: IApi) {
+        this.api = api;
     }
 
     getProducts(): Promise<IProductsResponse> {

@@ -5,6 +5,8 @@ import { Buyer } from './components/models/buyer';
 import { Basket } from './components/models/basket';
 import { IProduct } from './types';
 import { Communication } from './components/communication';
+import { Api } from './components/base/Api';
+import { API_URL } from './utils/constants';
 
 /** Проверка методов модели каталога */
 const productsModel= new Catalog();
@@ -50,8 +52,10 @@ console.log('Данные покупателя после ввода: ',newBuyer
 console.log('Проверка заполнения всех полей: ',newBuyerModel.validate());
 
 /** Проверка методов слоя общения с сервером */
-const communication = new Communication();
-communication.get().then((data) => {
+const communication = new Communication(new Api(API_URL));
+communication.getProducts().then((data) => {
     productsModel.setItems(data.items);
     console.log('Каталог,  с сервера: ', productsModel.getItems());
+}).catch((error: unknown) => {
+    console.error('Ошибка загрузки каталога: ', error);
 });
