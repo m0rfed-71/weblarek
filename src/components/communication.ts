@@ -12,11 +12,11 @@ export class Communication {
         this.api = new Api(API_URL);
     }
 
-    get(): Promise<IProductsResponse> {
+    getProducts(): Promise<IProductsResponse> {
         return this.api.get<IProductsResponse>('/product/');
     }
 
-    post(order: IOrder): Promise<IOrderResult> {
+    postOrder(order: IOrder): Promise<IOrderResult> {
         return this.api.post<IOrderResult>('/order', order);
     }
 }

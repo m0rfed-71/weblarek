@@ -1,4 +1,4 @@
-import { IBuyer, TPayment } from '../../types';
+import { IBuyer, TPayment, ValidateBuyer } from '../../types';
 
 /**
  * Модель покупателя: способ оплаты, адрес, телефон и email.
@@ -32,8 +32,8 @@ export class Buyer {
         this.address = '';
     }
 
-    validate(): Partial<Record<keyof IBuyer, string>> {
-        const errors: Partial<Record<keyof IBuyer, string>> = {};
+    validate(): ValidateBuyer {
+        const errors: ValidateBuyer = {};
 
         if (!this.payment) {
             errors.payment = 'Выберите выбрать способ оплаты';

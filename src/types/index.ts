@@ -28,6 +28,8 @@ export interface IBuyer {
     address: string;    
 }
 
+export type ValidateBuyer = Partial<Record<keyof IBuyer, string>>;
+
 export interface IOrder {
     payment: TPayment;
     email: string;
