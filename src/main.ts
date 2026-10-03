@@ -6,7 +6,9 @@ import { Basket } from './components/models/basket';
 import { IProduct } from './types';
 import { Communication } from './components/communication';
 import { Api } from './components/base/Api';
-import { API_URL } from './utils/constants';
+import { API_URL, CDN_URL } from './utils/constants';
+import { Card } from './components/views/Card';
+import { cloneTemplate, ensureElement } from './utils/utils';
 
 /** Проверка методов модели каталога */
 const productsModel= new Catalog();
@@ -59,3 +61,17 @@ communication.getProducts().then((data) => {
 }).catch((error: unknown) => {
     console.error('Ошибка загрузки каталога: ', error);
 });
+
+/** Проверка карточки в галерее */
+const gallery = ensureElement<HTMLElement>('.gallery');
+const cards = (apiProducts.items as IProduct[]).map((product) => {
+    const component = new Card(cloneTemplate('#card-catalog'));
+    return component.render({
+        title: product.title,
+        image: `${CDN_URL}${product.image}`,
+        category: product.category,
+        price: product.price,
+    });
+});
+
+gallery.replaceChildren(...cards);
