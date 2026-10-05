@@ -1,10 +1,12 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
+import { categoryMap } from "../../utils/constants";
 
+export type CategoryKey = keyof typeof categoryMap;
 interface ICard {
     title: string;
     image: string;
-    category: string;
+    category: CategoryKey;
     price: number | null;
 }
 
@@ -30,8 +32,9 @@ export class Card extends Component<ICard> {
         this.imageElement.src = value;
     }
 
-    protected set category(value: string) {
+    protected set category(value: CategoryKey) {
         this.categoryElement.textContent = value;
+        this.categoryElement.className = `card__category ${categoryMap[value]}`;
     }
 
     protected set price(value: number | null) {
