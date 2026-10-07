@@ -3,7 +3,7 @@ import { Component } from "../base/Component";
 import { categoryMap } from "../../utils/constants";
 
 export type CategoryKey = keyof typeof categoryMap;
-interface ICard {
+export interface ICard {
     title: string;
     image: string;
     category: CategoryKey;
@@ -16,12 +16,16 @@ export class Card extends Component<ICard> {
     protected categoryElement: HTMLElement;
     protected priceElement: HTMLElement;
 
-    constructor(container: HTMLElement) {
+    constructor(container: HTMLElement, onClick?: () => void) {
         super(container);
         this.titleElement = ensureElement<HTMLElement>('.card__title', this.container);
         this.priceElement = ensureElement<HTMLElement>('.card__price', this.container);
         this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.container);
         this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container);
+
+        if (onClick) {
+            this.container.addEventListener('click', onClick);
+        }
     }
 
     protected set title(value: string) {

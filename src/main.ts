@@ -7,7 +7,9 @@ import { IProduct } from './types';
 import { Communication } from './components/communication';
 import { Api } from './components/base/Api';
 import { API_URL, CDN_URL } from './utils/constants';
-import { Card } from './components/views/Card';
+import { Card, CategoryKey } from './components/views/Card';
+import { ProductPreview } from './components/views/ProductPreview';
+import { Modal } from './components/views/Modal';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
 /** Проверка методов модели каталога */
@@ -62,14 +64,30 @@ communication.getProducts().then((data) => {
     console.error('Ошибка загрузки каталога: ', error);
 });
 
-/** Проверка карточки в галерее */
+/** Проверка карточки в галерее и превью */
 const gallery = ensureElement<HTMLElement>('.gallery');
+const modal = new Modal(ensureElement<HTMLElement>('#modal-container'));
+
+const openPreview = (product: IProduct) => {
+    productsModel.setPreview(product);
+    const preview = new ProductPreview(cloneTemplate('#card-preview'));
+    modal.content = preview.render({
+        title: product.title,
+        image: `${CDN_URL}${product.image}`,
+        category: product.category as CategoryKey,
+        description: product.description,
+        price: product.price,
+        button: 'В корзину',
+    });
+    modal.open();
+};
+
 const cards = (apiProducts.items as IProduct[]).map((product) => {
-    const component = new Card(cloneTemplate('#card-catalog'));
+    const component = new Card(cloneTemplate('#card-catalog'), () => openPreview(product));
     return component.render({
         title: product.title,
         image: `${CDN_URL}${product.image}`,
-        category: product.category,
+        category: product.category as CategoryKey,
         price: product.price,
     });
 });
