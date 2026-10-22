@@ -7,9 +7,13 @@ import { IProduct } from './types';
 import { Communication } from './components/communication';
 import { Api } from './components/base/Api';
 import { API_URL, CDN_URL } from './utils/constants';
+import { EventEmitter } from './components/base/Events';
 import { Card, CategoryKey } from './components/views/Card';
 import { ProductPreview } from './components/views/ProductPreview';
 import { Modal } from './components/views/Modal';
+import { Header } from './components/views/Header';
+import { Basket as BasketView } from './components/views/Basket';
+import { BasketItem } from './components/views/BasketItem';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
 /** Проверка методов модели каталога */
@@ -64,23 +68,88 @@ communication.getProducts().then((data) => {
     console.error('Ошибка загрузки каталога: ', error);
 });
 
-/** Проверка карточки в галерее и превью */
+/** Корзина и превью товара */
+const events = new EventEmitter();
 const gallery = ensureElement<HTMLElement>('.gallery');
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'));
+const header = new Header(events, ensureElement<HTMLElement>('.header'));
+const basketView = new BasketView(events, cloneTemplate('#basket'));
+
+const basketButtonText = (product: IProduct): string => {
+    if (product.price === null) {
+        return 'Недоступно';
+    }
+    return basketModel.hasItem(product.id) ? 'Удалить из корзины' : 'В корзину';
+};
+
+const renderBasket = (): HTMLElement => {
+    const items = basketModel.getItems().map((product, index) => {
+        const item = new BasketItem(cloneTemplate('#card-basket'), () => {
+            events.emit('basket:remove', { id: product.id });
+        });
+
+        return item.render({
+            index: index + 1,
+            title: product.title,
+            price: product.price,
+        });
+    });
+
+    return basketView.render({
+        items,
+        total: basketModel.getTotal(),
+    });
+};
 
 const openPreview = (product: IProduct) => {
     productsModel.setPreview(product);
-    const preview = new ProductPreview(cloneTemplate('#card-preview'));
+    const preview = new ProductPreview(cloneTemplate('#card-preview'), () => {
+        events.emit('card:basket', { id: product.id });
+    });
     modal.content = preview.render({
         title: product.title,
         image: `${CDN_URL}${product.image}`,
         category: product.category as CategoryKey,
         description: product.description,
         price: product.price,
-        button: 'В корзину',
+        button: basketButtonText(product),
     });
     modal.open();
 };
+
+header.counter = basketModel.getCount();
+
+events.on('basket:open', () => {
+    modal.content = renderBasket();
+    modal.open();
+});
+
+events.on<{ id: string }>('basket:remove', ({ id }) => {
+    const product = basketModel.getItems().find((item) => item.id === id);
+    if (!product) {
+        return;
+    }
+
+    basketModel.removeItem(product);
+    header.counter = basketModel.getCount();
+    modal.content = renderBasket();
+});
+
+events.on<{ id: string }>('card:basket', ({ id }) => {
+    const product = productsModel.getItem(id) ?? productsModel.getPreview();
+    if (!product || product.price === null) {
+        return;
+    }
+
+    if (basketModel.hasItem(product.id)) {
+        basketModel.removeItem(product);
+    } else {
+        basketModel.addItem(product);
+    }
+
+    header.counter = basketModel.getCount();
+    openPreview(product);
+});
 
 const cards = (apiProducts.items as IProduct[]).map((product) => {
     const component = new Card(cloneTemplate('#card-catalog'), () => openPreview(product));
