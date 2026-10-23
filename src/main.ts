@@ -3,7 +3,7 @@ import { apiProducts } from './utils/data';
 import { Catalog } from './components/models/catalog';
 import { Buyer } from './components/models/buyer';
 import { Basket } from './components/models/basket';
-import { IProduct } from './types';
+import { IBuyer, IProduct, TPayment } from './types';
 import { Communication } from './components/communication';
 import { Api } from './components/base/Api';
 import { API_URL, CDN_URL } from './utils/constants';
@@ -14,6 +14,9 @@ import { Modal } from './components/views/Modal';
 import { Header } from './components/views/Header';
 import { Basket as BasketView } from './components/views/Basket';
 import { BasketItem } from './components/views/BasketItem';
+import { Order } from './components/views/Order';
+import { Contacts } from './components/views/Contacts';
+import { Success } from './components/views/Success';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
 /** Проверка методов модели каталога */
@@ -74,6 +77,9 @@ const gallery = ensureElement<HTMLElement>('.gallery');
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'));
 const header = new Header(events, ensureElement<HTMLElement>('.header'));
 const basketView = new BasketView(events, cloneTemplate('#basket'));
+const orderView = new Order(events, cloneTemplate<HTMLFormElement>('#order'));
+const contactsView = new Contacts(events, cloneTemplate<HTMLFormElement>('#contacts'));
+const successView = new Success(events, cloneTemplate('#success'));
 
 const basketButtonText = (product: IProduct): string => {
     if (product.price === null) {
@@ -162,3 +168,109 @@ const cards = (apiProducts.items as IProduct[]).map((product) => {
 });
 
 gallery.replaceChildren(...cards);
+
+/** Оформление заказа */
+const stepMessages = (...fields: (keyof IBuyer)[]): string[] => {
+    const errors = buyerModel.validate();
+    return fields
+        .map((field) => errors[field])
+        .filter((message): message is string => Boolean(message));
+};
+
+const syncOrder = (showErrors: boolean): void => {
+    const messages = stepMessages('payment', 'address');
+    orderView.valid = messages.length === 0;
+    orderView.errors = showErrors ? (messages[0] ?? '') : '';
+};
+
+const syncContacts = (showErrors: boolean): void => {
+    const messages = stepMessages('email', 'phone');
+    contactsView.valid = messages.length === 0;
+    contactsView.errors = showErrors ? (messages[0] ?? '') : '';
+};
+
+events.on('basket:order', () => {
+    const data = buyerModel.getData();
+    const messages = stepMessages('payment', 'address');
+    const started = Boolean(data.payment || data.address.trim());
+
+    modal.content = orderView.render({
+        payment: data.payment,
+        address: data.address,
+        valid: messages.length === 0,
+        errors: started ? (messages[0] ?? '') : '',
+    });
+    modal.open();
+});
+
+events.on<{ value: string }>('order.payment:change', ({ value }) => {
+    buyerModel.setData({ payment: value as TPayment });
+    syncOrder(true);
+});
+
+events.on<{ value: string }>('order.address:change', ({ value }) => {
+    buyerModel.setData({ address: value });
+    syncOrder(true);
+});
+
+events.on('order:submit', () => {
+    if (stepMessages('payment', 'address').length > 0) {
+        syncOrder(true);
+        return;
+    }
+
+    const data = buyerModel.getData();
+    const messages = stepMessages('email', 'phone');
+    const started = Boolean(data.email.trim() || data.phone.trim());
+
+    modal.content = contactsView.render({
+        email: data.email,
+        phone: data.phone,
+        valid: messages.length === 0,
+        errors: started ? (messages[0] ?? '') : '',
+    });
+});
+
+events.on<{ value: string }>('contacts.email:change', ({ value }) => {
+    buyerModel.setData({ email: value });
+    syncContacts(true);
+});
+
+events.on<{ value: string }>('contacts.phone:change', ({ value }) => {
+    buyerModel.setData({ phone: value });
+    syncContacts(true);
+});
+
+events.on('contacts:submit', () => {
+    const data = buyerModel.getData();
+    if (!data.payment || stepMessages('payment', 'address', 'email', 'phone').length > 0) {
+        syncContacts(true);
+        return;
+    }
+
+    contactsView.valid = false;
+
+    communication
+        .postOrder({
+            payment: data.payment,
+            email: data.email.trim(),
+            phone: data.phone.trim(),
+            address: data.address.trim(),
+            total: basketModel.getTotal(),
+            items: basketModel.getItems().map((item) => item.id),
+        })
+        .then((result) => {
+            basketModel.clear();
+            buyerModel.clear();
+            header.counter = 0;
+            modal.content = successView.render({ total: result.total });
+        })
+        .catch((error: unknown) => {
+            syncContacts(true);
+            contactsView.errors = typeof error === 'string' ? error : 'Не удалось оформить заказ';
+        });
+});
+
+events.on('success:close', () => {
+    modal.close();
+});

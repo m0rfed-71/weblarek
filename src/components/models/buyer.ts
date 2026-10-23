@@ -36,18 +36,18 @@ export class Buyer {
         const errors: ValidateBuyer = {};
 
         if (!this.payment) {
-            errors.payment = 'Выберите выбрать способ оплаты';
+            errors.payment = 'Необходимо выбрать способ оплаты';
         }
 
-        if (!this.email) {
+        if (!this.email.trim()) {
             errors.email = 'Необходимо указать email';
         }
 
-        if (!this.phone) {
+        if (!this.phone.trim()) {
             errors.phone = 'Необходимо указать телефон';
         }
 
-        if (!this.address) {
+        if (!this.address.trim()) {
             errors.address = 'Необходимо указать адрес';
         }
 

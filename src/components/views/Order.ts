@@ -42,6 +42,8 @@ export class Order extends Form<IOrderForm> {
 	}
 
 	set address(value: string) {
-		this.addressInput.value = value;
+		if (this.addressInput.value !== value) {
+			this.addressInput.value = value;
+		}
 	}
 }
