@@ -10,7 +10,7 @@ export interface ICard {
     price: number | null;
 }
 
-export class Card extends Component<ICard> {
+export class Card<T extends ICard = ICard> extends Component<T> {
     protected titleElement: HTMLElement;
     protected imageElement: HTMLImageElement;
     protected categoryElement: HTMLElement;
