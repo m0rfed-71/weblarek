@@ -1,10 +1,7 @@
 import { ensureElement } from "../../utils/utils";
-import { Card, ICard } from "./Card";
+import { IProductPreview } from "../../types";
+import { Card } from "./Card";
 
-export interface IProductPreview extends ICard {
-    description: string;
-    button: string;
-}
 
 export class ProductPreview extends Card<IProductPreview> {
     protected textElement: HTMLElement;

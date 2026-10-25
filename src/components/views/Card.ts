@@ -1,14 +1,7 @@
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { categoryMap } from "../../utils/constants";
-
-export type CategoryKey = keyof typeof categoryMap;
-export interface ICard {
-    title: string;
-    image: string;
-    category: CategoryKey;
-    price: number | null;
-}
+import { CategoryKey, ICard } from "../../types";
 
 export class Card<T extends ICard = ICard> extends Component<T> {
     protected titleElement: HTMLElement;

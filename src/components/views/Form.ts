@@ -13,9 +13,11 @@ export interface IFormState {
 export class Form<T> extends Component<T & IFormState> {
 	protected submitButton: HTMLButtonElement;
 	protected errorsElement: HTMLElement;
+	protected formName: string;
 
 	constructor(protected events: IEvents, container: HTMLFormElement) {
 		super(container);
+		this.formName = container.name;
 
 		this.submitButton = ensureElement<HTMLButtonElement>(
 			'button[type=submit]',
@@ -33,16 +35,12 @@ export class Form<T> extends Component<T & IFormState> {
 
 		this.container.addEventListener('submit', (event: Event) => {
 			event.preventDefault();
-			this.events.emit(`${this.form.name}:submit`);
+			this.events.emit(`${this.formName}:submit`);
 		});
 	}
 
-	protected get form(): HTMLFormElement {
-		return this.container as HTMLFormElement;
-	}
-
 	protected onInputChange(field: keyof T, value: string): void {
-		this.events.emit(`${this.form.name}.${String(field)}:change`, {
+		this.events.emit(`${this.formName}.${String(field)}:change`, {
 			field,
 			value,
 		});
@@ -54,12 +52,5 @@ export class Form<T> extends Component<T & IFormState> {
 
 	set errors(value: string) {
 		this.errorsElement.textContent = value;
-	}
-
-	render(state?: Partial<T & IFormState>): HTMLElement {
-		const { valid, errors, ...inputs } = state ?? {};
-		super.render({ valid, errors } as Partial<T & IFormState>);
-		Object.assign(this, inputs);
-		return this.container;
 	}
 }

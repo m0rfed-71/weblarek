@@ -1,11 +1,7 @@
 import { ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/Events';
 import { Form } from './Form';
-
-export interface IContactsForm {
-	email: string;
-	phone: string;
-}
+import { IContactsForm } from '../../types';
 
 /**
  * Второй шаг заказа: email и телефон.

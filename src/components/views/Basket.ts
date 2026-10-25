@@ -1,12 +1,7 @@
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/Events';
-
-export interface IBasketView {
-    items: HTMLElement[];
-    total: number;
-}
-
+import { IBasketView } from '../../types';
 /**
  * Корзина в модальном окне: список, сумма и кнопка «Оформить».
  */

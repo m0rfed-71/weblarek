@@ -1,3 +1,5 @@
+import { categoryMap } from '../utils/constants';
+
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
@@ -10,7 +12,7 @@ export interface IProduct {
     description: string;
     image: string;
     title: string;
-    category: string;
+    category: CategoryKey;
     price: number | null;
 }
 
@@ -42,4 +44,46 @@ export interface IOrder {
 export interface IOrderResult {
     id: string;
     total: number;
+}
+
+export interface IBasketView {
+    items: HTMLElement[];
+    total: number;
+}
+
+export type CategoryKey = keyof typeof categoryMap;
+
+export interface ICard {
+    title: string;
+    image: string;
+    category: CategoryKey;
+    price: number | null;
+}
+
+export interface IBasketItem {
+    index: number;
+    title: string;
+    price: number | null;
+}
+
+export interface ICardCatalog {
+    items: HTMLElement[];
+}
+
+export interface IContactsForm {
+	email: string;
+	phone: string;
+}
+
+export interface IHeader {
+    counter: number;
+}
+
+export interface IModal {
+    content: HTMLElement;
+}
+
+export interface IOrderForm {
+	payment: TPayment | '';
+	address: string;
 }

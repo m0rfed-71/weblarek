@@ -2,11 +2,7 @@ import { TPayment } from '../../types';
 import { ensureAllElements, ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/Events';
 import { Form } from './Form';
-
-export interface IOrderForm {
-	payment: TPayment | '';
-	address: string;
-}
+import { IOrderForm } from '../../types';
 
 /**
  * Первый шаг заказа: способ оплаты и адрес доставки.

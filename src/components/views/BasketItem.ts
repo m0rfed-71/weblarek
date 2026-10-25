@@ -1,11 +1,6 @@
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
-
-export interface IBasketItem {
-    index: number;
-    title: string;
-    price: number | null;
-}
+import { IBasketItem } from '../../types';
 
 /**
  * Строка товара в корзине: номер, название, цена и удаление.
