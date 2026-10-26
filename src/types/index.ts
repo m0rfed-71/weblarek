@@ -60,10 +60,8 @@ export interface ICard {
     price: number | null;
 }
 
-export interface IBasketItem {
+export interface IBasketItem extends Pick<ICard, 'title' | 'price'> {
     index: number;
-    title: string;
-    price: number | null;
 }
 
 export interface ICardCatalog {
@@ -86,4 +84,13 @@ export interface IModal {
 export interface IOrderForm {
 	payment: TPayment | '';
 	address: string;
+}
+
+export interface IProductPreview extends ICard {
+    description: string;
+    button: string;
+}
+
+export interface ISuccess {
+	total: number;
 }

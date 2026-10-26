@@ -2,7 +2,6 @@ import { ensureElement } from "../../utils/utils";
 import { IProductPreview } from "../../types";
 import { Card } from "./Card";
 
-
 export class ProductPreview extends Card<IProductPreview> {
     protected textElement: HTMLElement;
     protected buttonElement: HTMLButtonElement;

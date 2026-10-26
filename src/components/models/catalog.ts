@@ -1,3 +1,4 @@
+import { IEvents } from '../base/Events';
 import { IProduct } from '../../types';
 
 /**
@@ -7,8 +8,11 @@ export class Catalog {
     protected items: IProduct[] = [];
     protected preview: IProduct | null = null;
 
+    constructor(protected events: IEvents) {}
+
     setItems(items: IProduct[]): void {
         this.items = items;
+        this.events.emit('catalog:change');
     }
 
     getItems(): IProduct[] {
