@@ -59,6 +59,7 @@ export interface ICard {
     category: CategoryKey;
     price: number | null;
 }
+export type ICardBase = Pick<ICard, 'title' | 'price'>;
 
 export interface IBasketItem extends Pick<ICard, 'title' | 'price'> {
     index: number;

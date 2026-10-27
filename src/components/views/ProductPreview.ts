@@ -1,8 +1,8 @@
 import { ensureElement } from "../../utils/utils";
 import { IProductPreview } from "../../types";
-import { Card } from "./Card";
+import { ProductCard } from "./ProductCard";
 
-export class ProductPreview extends Card<IProductPreview> {
+export class ProductPreview extends ProductCard<IProductPreview> {
     protected textElement: HTMLElement;
     protected buttonElement: HTMLButtonElement;
 

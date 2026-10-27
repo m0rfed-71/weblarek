@@ -1,15 +1,13 @@
 import { ensureElement } from '../../utils/utils';
-import { IBasketItem, ICard } from '../../types';
+import { IBasketItem } from '../../types';
 import { Card } from './Card';
 
 /**
  * Строка товара в корзине: номер, название, цена и удаление.
  */
-export class BasketItem extends Card<ICard & IBasketItem> {
+export class BasketItem extends Card<IBasketItem> {
     protected indexElement: HTMLElement;
     protected deleteButton: HTMLButtonElement;
-
-    protected findImageAndCategory(): void {}
 
     constructor(container: HTMLElement, onDelete?: () => void) {
         super(container);

@@ -8,7 +8,7 @@ import { Communication } from './components/communication';
 import { Api } from './components/base/Api';
 import { API_URL, CDN_URL } from './utils/constants';
 import { EventEmitter } from './components/base/Events';
-import { Card } from './components/views/Card';
+import { ProductCard } from './components/views/ProductCard';
 import { ProductPreview } from './components/views/ProductPreview';
 import { Modal } from './components/views/Modal';
 import { Header } from './components/views/Header';
@@ -20,12 +20,12 @@ import { Success } from './components/views/Success';
 import { cloneTemplate, ensureElement } from './utils/utils';
 
 
-const basketModel = new Basket();
 const communication = new Communication(new Api(API_URL));
 
 
 /** Корзина и превью товара */
 const events = new EventEmitter();
+const basketModel = new Basket(events);
 const productsModel = new Catalog(events);
 const buyerModel = new Buyer(events);
 const gallery = ensureElement<HTMLElement>('.gallery');
@@ -39,7 +39,7 @@ const preview = new ProductPreview(cloneTemplate('#card-preview'), () => {
     events.emit('card:basket');
 });
 
-const basketButtonText = (product: IProduct): string => {
+const getBasketButtonText = (product: IProduct): string => {
     if (product.price === null) {
         return 'Недоступно';
     }
@@ -61,13 +61,14 @@ const updateBasket = (): void => {
 
     basketView.items = items;
     basketView.total = basketModel.getTotal();
+    header.counter = basketModel.getCount();
 };
 
+events.on('basket:change', updateBasket);
 updateBasket();
 
 const openPreview = (product: IProduct) => {
     productsModel.setPreview(product);
-    events.emit('preview:change');
 };
 
 events.on('preview:change', () => {
@@ -82,12 +83,10 @@ events.on('preview:change', () => {
         category: product.category as CategoryKey,
         description: product.description,
         price: product.price,
-        button: basketButtonText(product),
+        button: getBasketButtonText(product),
     });
     modal.open();
 });
-
-header.counter = basketModel.getCount();
 
 events.on('basket:open', () => {
     modal.content = basketView.render();
@@ -101,8 +100,6 @@ events.on<{ id: string }>('basket:remove', ({ id }) => {
     }
 
     basketModel.removeItem(product);
-    header.counter = basketModel.getCount();
-    updateBasket();
 });
 
 events.on('card:basket', () => {
@@ -117,14 +114,12 @@ events.on('card:basket', () => {
         basketModel.addItem(product);
     }
 
-    header.counter = basketModel.getCount();
-    updateBasket();
     events.emit('preview:change');
 });
 
 events.on('catalog:change', () => {
     const cards = productsModel.getItems().map((product) => {
-        const component = new Card(cloneTemplate('#card-catalog'), () => openPreview(product));
+        const component = new ProductCard(cloneTemplate('#card-catalog'), () => openPreview(product));
         return component.render({
             title: product.title,
             image: `${CDN_URL}${product.image}`,
@@ -216,8 +211,6 @@ events.on('contacts:submit', () => {
         .then((result) => {
             basketModel.clear();
             buyerModel.clear();
-            header.counter = 0;
-            updateBasket();
             modal.content = successView.render({ total: result.total });
         })
         .catch((error: unknown) => {

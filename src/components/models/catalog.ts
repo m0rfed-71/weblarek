@@ -25,6 +25,7 @@ export class Catalog {
 
     setPreview(item: IProduct): void {
         this.preview = item;
+        this.events.emit('preview:change');
     }
 
     getPreview(): IProduct | null {
